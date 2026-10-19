@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Leasing Tracker">
+    <meta name="description" content="Verfolge deinen Leasing-Kilometerstand und bleibe im Plan">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%234CAF50'/%3E%3Cpath d='M128 200 L256 120 L384 200 L384 350 L128 350 Z' fill='white'/%3E%3Cpath d='M180 280 L220 280 L220 350 L180 350 Z' fill='%234CAF50'/%3E%3Cpath d='M292 280 L332 280 L332 350 L292 350 Z' fill='%234CAF50'/%3E%3Ccircle cx='200' cy='300' r='15' fill='%23FFD700'/%3E%3Ccircle cx='312' cy='300' r='15' fill='%23FFD700'/%3E%3Cpath d='M140 350 Q150 380 180 380 L332 380 Q362 380 372 350' stroke='white' stroke-width='8' fill='none'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%234CAF50'/%3E%3Cpath d='M128 200 L256 120 L384 200 L384 350 L128 350 Z' fill='white'/%3E%3Cpath d='M180 280 L220 280 L220 350 L180 350 Z' fill='%234CAF50'/%3E%3Cpath d='M292 280 L332 280 L332 350 L292 350 Z' fill='%234CAF50'/%3E%3Ccircle cx='200' cy='300' r='15' fill='%23FFD700'/%3E%3Ccircle cx='312' cy='300' r='15' fill='%23FFD700'/%3E%3Cpath d='M140 350 Q150 380 180 380 L332 380 Q362 380 372 350' stroke='white' stroke-width='8' fill='none'/%3E%3C/svg%3E">
+    <title>Leasing Kilometerstand</title>
+    <style>
+        :root {
+            --bg-body: #f5f5f5;
+            --bg-container: #ffffff;
+            --bg-input: #ffffff;
+            --bg-cell: #f9f9f9;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+            --input-border: #ddd;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #1a1a1a;
+            --bg-container: #2d2d2d;
+            --bg-input: #3a3a3a;
+            --bg-cell: #353535;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --input-border: #555;
+            --shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-body);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+            transition: var(--transition);
+        }
+
+        .container {
+            background: var(--bg-container);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        /* Install Banner */
+        .install-banner {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 1rem 1.25rem;
+            display: none;
+            align-items: center;
+            gap: 0.9375rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .install-banner.show {
+            display: flex;
+        }
+
+        .install-banner-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .install-banner-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .install-banner-title {
+            font-weight: bold;
+            font-size: 0.9375rem;
+            margin-bottom: 0.1875rem;
+        }
+
+        .install-banner-subtitle {
+            font-size: 0.8125rem;
+            opacity: 0.9;
+        }
+
+        .install-banner-button {
+            background: white;
+            color: #4CAF50;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.375rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .install-banner-button:hover {
+            background: #f1f1f1;
+            transform: scale(1.03);
+        }
+
+        .install-banner-button:active {
+            transform: scale(0.97);
+        }
+
+        .install-banner-close {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .install-banner-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-cell);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            width: 3rem;
+            height: 1.75rem;
+            cursor: pointer;
+            padding: 0.125rem;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            z-index: 10;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle-slider {
+            background: #4CAF50;
+            width: 1.375rem;
+            height: 1.375rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle-slider {
+            transform: translateX(1.375rem);
+            background: #2196F3;
+        }
+
+        .theme-toggle-slider span {
+            font-size: 0.75rem;
+        }
+
+        .input-section {
+            padding: 3.75rem 1.25rem 1.25rem;
+            border-bottom: 2px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--input-border);
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: var(--transition);
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        .input-group input::-webkit-inner-spin-button,
+        .input-group input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        td {
+            padding: 0.9375rem 1.25rem;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        td:first-child {
+            color: var(--text-secondary);
+            width: 60%;
+        }
+
+        td:last-child {
+            text-align: right;
+            font-weight: 600;
+            background: var(--bg-cell);
+            color: var(--text-primary);
+        }
+
+        .section-header td {
+            background: var(--border-color);
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.625rem 1.25rem;
+        }
+
+        .highlight-row td {
+            font-size: 1.125rem;
+            padding: 1.25rem;
+        }
+
+        .highlight-row td:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .delta-positive { background: #4CAF50 !important; color: white !important; font-size: 1.5rem !important; }
+        .delta-negative { background: #f44336 !important; color: white !important; font-size: 1.5rem !important; }
+        .prognose-good { background: #4CAF50 !important; color: white !important; }
+        .prognose-warning { background: #FF9800 !important; color: white !important; }
+        .prognose-bad { background: #f44336 !important; color: white !important; }
+
+        .warning-section {
+            margin: 1rem;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border-left: 4px solid;
+            display: none;
+            transition: var(--transition);
+        }
+
+        .warning-section.show {
+            display: block;
+        }
+
+        .warning-critical { background: #ffebee; border-color: #f44336; }
+        [data-theme="dark"] .warning-critical { background: #4a1a1a; border-color: #ff5252; }
+        .warning-moderate { background: #fff3e0; border-color: #ff9800; }
+        [data-theme="dark"] .warning-moderate { background: #4a3a1a; border-color: #ffb74d; }
+        .warning-info { background: #e3f2fd; border-color: #2196f3; }
+        [data-theme="dark"] .warning-info { background: #1a2a4a; border-color: #64b5f6; }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-critical .warning-title { color: #c62828; }
+        [data-theme="dark"] .warning-critical .warning-title { color: #ff5252; }
+        .warning-moderate .warning-title { color: #e65100; }
+        [data-theme="dark"] .warning-moderate .warning-title { color: #ffb74d; }
+        .warning-info .warning-title { color: #1565c0; }
+        [data-theme="dark"] .warning-info .warning-title { color: #64b5f6; }
+
+        .warning-message, .warning-recommendation {
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .warning-recommendation {
+            font-weight: 600;
+            margin-top: 0.625rem;
+            padding-top: 0.625rem;
+            border-top: 1px solid;
+        }
+
+        .warning-critical .warning-recommendation { border-color: rgba(198, 40, 40, 0.3); }
+        .warning-moderate .warning-recommendation { border-color: rgba(230, 81, 0, 0.3); }
+        .warning-info .warning-recommendation { border-color: rgba(21, 101, 192, 0.3); }
+
+        @media (max-width: 600px) {
+            body { padding: 0.625rem; }
+            .container { margin-top: 0.625rem; max-width: 100%; }
+            .install-banner { padding: 0.875rem 0.9375rem; gap: 0.75rem; }
+            .install-banner-icon { font-size: 1.75rem; }
+            .install-banner-title { font-size: 0.875rem; }
+            .install-banner-subtitle { font-size: 0.75rem; }
+            .install-banner-button { padding: 0.5rem 1rem; font-size: 0.8125rem; }
+            .install-banner-close { width: 1.75rem; height: 1.75rem; font-size: 1.125rem; }
+            .theme-toggle { top: 0.9375rem; right: 0.9375rem; width: 3.4375rem; height: 2rem; }
+            .theme-toggle-slider { width: 1.625rem; height: 1.625rem; font-size: 0.875rem; }
+            [data-theme="dark"] .theme-toggle-slider { transform: translateX(1.4375rem); }
+            .input-section { padding: 3.4375rem 0.9375rem 0.9375rem; }
+            td { padding: 1rem 0.9375rem; font-size: 0.9375rem; }
+            .section-header td { font-size: 0.8125rem; padding: 0.75rem 0.9375rem; }
+            .highlight-row td { font-size: 1.1875rem; padding: 1.125rem 0.9375rem; }
+            .delta-positive, .delta-negative { font-size: 1.625rem !important; }
+            .warning-section { margin: 0.75rem 0.9375rem; padding: 0.75rem; }
+            .warning-title { font-size: 0.9375rem; }
+            .warning-message, .warning-recommendation { font-size: 0.875rem; }
+        }
+
+        @media (max-width: 400px) {
+            .container { border-radius: 0; }
+            body { padding: 0; }
+            .install-banner { padding: 0.75rem; gap: 0.625rem; }
+            .install-banner-icon { font-size: 1.5rem; }
+            .install-banner-title { font-size: 0.8125rem; margin-bottom: 0.125rem; }
+            .install-banner-subtitle { font-size: 0.6875rem; }
+            .install-banner-button { padding: 0.4375rem 0.875rem; font-size: 0.75rem; }
+            td { padding: 0.875rem 0.75rem; font-size: 0.875rem; }
+            .highlight-row td { font-size: 1.0625rem; padding: 1rem 0.75rem; }
+            .delta-positive, .delta-negative { font-size: 1.5rem !important; }
+            .warning-section { margin: 0.625rem 0.75rem; padding: 0.625rem; }
+            .warning-title { font-size: 0.875rem; }
+            .warning-message, .warning-recommendation { font-size: 0.8125rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" role="main">
+        <div class="install-banner" id="installBanner">
+            <div class="install-banner-icon">📱</div>
+            <div class="install-banner-text">
+                <div class="install-banner-title">Als App installieren</div>
+                <div class="install-banner-subtitle">Schneller Zugriff vom Homescreen</div>
+            </div>
+            <button class="install-banner-button" id="installButton">Installieren</button>
+            <button class="install-banner-close" id="closeBanner">×</button>
+        </div>
+
+        <div class="theme-toggle" id="themeToggle" aria-label="Theme umschalten">
+            <div class="theme-toggle-slider" role="switch" aria-checked="false">
+                <span id="themeIcon">☀️</span>
+            </div>
+        </div>
+
+        <div class="input-section" aria-labelledby="input-section-heading">
+            <h2 id="input-section-heading" class="visually-hidden">Eingabedaten</h2>
+            <div class="input-group">
+                <label for="kmJahr">km / Jahr</label>
+                <input type="number" id="kmJahr" value="15000" min="0" step="1" required>
+            </div>
+            <div class="input-group">
+                <label for="laufzeit">Laufzeit (Jahre)</label>
+                <input type="number" id="laufzeit" value="3" min="1" max="10" step="0.5" required>
+            </div>
+            <div class="input-group">
+                <label for="startDate">Start</label>
+                <input type="date" id="startDate" value="2025-06-20" required>
+            </div>
+            <div class="input-group">
+                <label for="aktuellerKm">Aktueller km Stand</label>
+                <input type="number" id="aktuellerKm" value="4073" min="0" step="1" required>
+            </div>
+        </div>
+
+        <div class="warning-section" id="warningBox" role="alert">
+            <div class="warning-title" id="warningTitle">
+                <span id="warningIcon" aria-hidden="true"></span>
+                <span id="warningTitleText"></span>
+            </div>
+            <div class="warning-message" id="warningMessage"></div>
+            <div class="warning-recommendation" id="warningRecommendation"></div>
+        </div>
+
+        <div class="table-section" aria-labelledby="table-section-heading">
+            <h2 id="table-section-heading" class="visually-hidden">Vertragsübersicht</h2>
+            <table>
+                <tr class="section-header"><td colspan="2">Aktueller Status</td></tr>
+                <tr><td>km / Tag</td><td id="kmTag">41</td></tr>
+                <tr><td>Tage seit Leasingstart</td><td id="tageSeit">111</td></tr>
+                <tr class="highlight-row"><td>SOLL</td><td id="soll">4.562</td></tr>
+                <tr class="highlight-row"><td>DELTA</td><td id="delta" class="delta-positive">489</td></tr>
+
+                <tr class="section-header"><td colspan="2">Leasingende</td></tr>
+                <tr><td>Vertragsende</td><td id="vertragsende">20.06.2028</td></tr>
+                <tr><td>Verbleibende Tage</td><td id="verbleibendeTage">984</td></tr>
+                <tr><td>Gesamt-km Limit</td><td id="gesamtKm">45.000</td></tr>
+                <tr class="highlight-row"><td>Verfügbare Rest-km</td><td id="restKm">40.927</td></tr>
+
+                <tr class="section-header"><td colspan="2">Prognose</td></tr>
+                <tr><td>Dein aktueller Ø km/Tag</td><td id="aktuellerDurchschnitt">37</td></tr>
+                <tr class="highlight-row"><td>Prognose bei Vertragsende</td><td id="prognose" class="prognose-good">40.381</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'leasingTrackerData';
+        const THEME_KEY = 'leasingTrackerTheme';
+
+        function formatNumber(num) {
+            return Number.isFinite(num) ? num.toLocaleString('de-DE') : '0';
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('de-DE');
+        }
+
+        function saveToLocalStorage() {
+            const data = {
+                kmJahr: document.getElementById('kmJahr').value,
+                laufzeit: document.getElementById('laufzeit').value,
+                startDate: document.getElementById('startDate').value,
+                aktuellerKm: document.getElementById('aktuellerKm').value
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    document.getElementById('kmJahr').value = data.kmJahr || 15000;
+                    document.getElementById('laufzeit').value = data.laufzeit || 3;
+                    document.getElementById('startDate').value = data.startDate || '2025-06-20';
+                    document.getElementById('aktuellerKm').value = data.aktuellerKm || 4073;
+                } catch (e) {
+                    console.error('Fehler beim Laden:', e);
+                }
+            }
+        }
+
+        function getPreferredTheme() {
+            return localStorage.getItem(THEME_KEY) || 
+                   (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem(THEME_KEY, theme);
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        function calculate() {
+            const kmJahr = parseFloat(document.getElementById('kmJahr').value) || 0;
+            const laufzeit = parseFloat(document.getElementById('laufzeit').value) || 3;
+            const startDate = new Date(document.getElementById('startDate').value);
+            const aktuellerKm = parseFloat(document.getElementById('aktuellerKm').value) || 0;
+            const heute = new Date();
+
+            if (isNaN(kmJahr) || isNaN(laufzeit) || isNaN(aktuellerKm) || isNaN(startDate.getTime())) return;
+
+            const vertragsende = new Date(startDate);
+            vertragsende.setFullYear(startDate.getFullYear() + Math.floor(laufzeit));
+            vertragsende.setMonth(startDate.getMonth() + Math.round((laufzeit % 1) * 12));
+
+            const diffTime = Math.max(0, heute - startDate);
+            const tageSeit = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffTimeEnde = Math.max(0, vertragsende - heute);
+            const verbleibendeTage = Math.floor(diffTimeEnde / (1000 * 60 * 60 * 24));
+
+            const kmTag = Math.round(kmJahr / 365);
+            const soll = Math.round(kmTag * tageSeit);
+            const delta = soll - aktuellerKm;
+            const gesamtKm = Math.round(kmJahr * laufzeit);
+            const restKm = Math.max(0, gesamtKm - aktuellerKm);
+            const aktuellerDurchschnitt = tageSeit > 0 ? Math.round(aktuellerKm / tageSeit) : 0;
+            const prognose = aktuellerKm + (aktuellerDurchschnitt * verbleibendeTage);
+
+            document.getElementById('kmTag').textContent = formatNumber(kmTag);
+            document.getElementById('tageSeit').textContent = formatNumber(tageSeit);
+            document.getElementById('soll').textContent = formatNumber(soll);
+            document.getElementById('delta').textContent = formatNumber(Math.abs(delta));
+            document.getElementById('delta').className = delta >= 0 ? 'delta-positive' : 'delta-negative';
+
+            document.getElementById('vertragsende').textContent = formatDate(vertragsende);
+            document.getElementById('verbleibendeTage').textContent = formatNumber(verbleibendeTage);
+            document.getElementById('gesamtKm').textContent = formatNumber(gesamtKm);
+            document.getElementById('restKm').textContent = formatNumber(restKm);
+
+            document.getElementById('aktuellerDurchschnitt').textContent = formatNumber(aktuellerDurchschnitt);
+            document.getElementById('prognose').textContent = formatNumber(prognose);
+            document.getElementById('prognose').className = 
+                prognose <= gesamtKm - 1000 ? 'prognose-good' :
+                prognose <= gesamtKm ? 'prognose-warning' : 'prognose-bad';
+
+            saveToLocalStorage();
+            checkAndShowWarnings(delta, prognose, gesamtKm, verbleibendeTage, aktuellerDurchschnitt);
+        }
+
+        function checkAndShowWarnings(delta, prognose, gesamtKm, verbleibendeTage, aktuellerDurchschnitt) {
+            const warningBox = document.getElementById('warningBox');
+            const warningIcon = document.getElementById('warningIcon');
+            const warningTitleText = document.getElementById('warningTitleText');
+            const warningMessage = document.getElementById('warningMessage');
+            const warningRecommendation = document.getElementById('warningRecommendation');
+
+            warningBox.className = 'warning-section';
+            const ueberschreitung = prognose - gesamtKm;
+
+            if (ueberschreitung > 2000) {
+                const maxKmProTag = Math.floor((gesamtKm - parseFloat(document.getElementById('aktuellerKm').value)) / verbleibendeTage);
+                warningBox.classList.add('show', 'warning-critical');
+                warningIcon.textContent = '🚨';
+                warningTitleText.textContent = 'Kritische Warnung!';
+                warningMessage.innerHTML = `Bei deinem aktuellen Fahrverhalten wirst du das Limit um <strong>${formatNumber(ueberschreitung)} km</strong> überschreiten!`;
+                warningRecommendation.innerHTML = `💡 Reduziere auf max. <strong>${formatNumber(maxKmProTag)} km/Tag</strong>`;
+            } else if (ueberschreitung > 0) {
+                const maxKmProTag = Math.floor((gesamtKm - parseFloat(document.getElementById('aktuellerKm').value)) / verbleibendeTage);
+                warningBox.classList.add('show', 'warning-moderate');
+                warningIcon.textContent = '⚠️';
+                warningTitleText.textContent = 'Achtung!';
+                warningMessage.innerHTML = `Du bist auf Kurs, das Limit um <strong>${formatNumber(ueberschreitung)} km</strong> zu überschreiten.`;
+                warningRecommendation.innerHTML = `💡 Fahre max. <strong>${formatNumber(maxKmProTag)} km/Tag</strong>`;
+            } else if (delta < -500) {
+                const sollKmProTag = Math.round(parseFloat(document.getElementById('kmJahr').value) / 365);
+                warningBox.classList.add('show', 'warning-moderate');
+                warningIcon.textContent = '⚠️';
+                warningTitleText.textContent = 'Über dem Soll';
+                warningMessage.innerHTML = `Du hast <strong>${formatNumber(Math.abs(delta))} km</strong> mehr gefahren als geplant.`;
+                warningRecommendation.innerHTML = `💡 Reduziere auf <strong>${formatNumber(sollKmProTag)} km/Tag</strong>`;
+            } else if (delta > 3000) {
+                const kmTag = Math.round(parseFloat(document.getElementById('kmJahr').value) / 365);
+                const reserveProTag = Math.floor(delta / verbleibendeTage);
+                warningBox.classList.add('show', 'warning-info');
+                warningIcon.textContent = '✅';
+                warningTitleText.textContent = 'Super!';
+                warningMessage.innerHTML = `Du hast noch <strong>${formatNumber(delta)} km</strong> Reserve.`;
+                warningRecommendation.innerHTML = `💡 Du kannst bis zu <strong>${formatNumber(kmTag + reserveProTag)} km/Tag</strong> fahren.`;
+            }
+        }
+
+        // Initialisierung
+        setTheme(getPreferredTheme());
+        loadFromLocalStorage();
+        calculate();
+
+        // Event Listener
+        document.querySelectorAll('input').forEach(input => 
+            input.addEventListener('input', calculate));
+        
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+
+        // System Theme Listener
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem(THEME_KEY)) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+
+        // PWA Installation
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('Service Worker registriert:', reg.scope))
+                .catch(err => console.error('Service Worker Fehler:', err));
+        }
+
+        let deferredPrompt;
+        const installBanner = document.getElementById('installBanner');
+        const installButton = document.getElementById('installButton');
+        const closeBanner = document.getElementById('closeBanner');
+
+        const bannerDismissed = localStorage.getItem('installBannerDismissed');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!bannerDismissed) {
+                installBanner.classList.add('show');
+            }
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('PWA installiert');
+            }
+            deferredPrompt = null;
+            installBanner.classList.remove('show');
+        });
+
+        closeBanner.addEventListener('click', () => {
+            installBanner.classList.remove('show');
+            localStorage.setItem('installBannerDismissed', 'true');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA zum Homescreen hinzugefügt');
+            installBanner.classList.remove('show');
+            localStorage.setItem('installBannerDismissed', 'true');
+        });
+    </script>
+</body>
+</html>
