@@ -1,668 +1,800 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#4CAF50">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Leasing Tracker">
-    <meta name="description" content="Verfolge deinen Leasing-Kilometerstand und bleibe im Plan">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%234CAF50'/%3E%3Cpath d='M128 200 L256 120 L384 200 L384 350 L128 350 Z' fill='white'/%3E%3Cpath d='M180 280 L220 280 L220 350 L180 350 Z' fill='%234CAF50'/%3E%3Cpath d='M292 280 L332 280 L332 350 L292 350 Z' fill='%234CAF50'/%3E%3Ccircle cx='200' cy='300' r='15' fill='%23FFD700'/%3E%3Ccircle cx='312' cy='300' r='15' fill='%23FFD700'/%3E%3Cpath d='M140 350 Q150 380 180 380 L332 380 Q362 380 372 350' stroke='white' stroke-width='8' fill='none'/%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%234CAF50'/%3E%3Cpath d='M128 200 L256 120 L384 200 L384 350 L128 350 Z' fill='white'/%3E%3Cpath d='M180 280 L220 280 L220 350 L180 350 Z' fill='%234CAF50'/%3E%3Cpath d='M292 280 L332 280 L332 350 L292 350 Z' fill='%234CAF50'/%3E%3Ccircle cx='200' cy='300' r='15' fill='%23FFD700'/%3E%3Ccircle cx='312' cy='300' r='15' fill='%23FFD700'/%3E%3Cpath d='M140 350 Q150 380 180 380 L332 380 Q362 380 372 350' stroke='white' stroke-width='8' fill='none'/%3E%3C/svg%3E">
-    <title>Leasing Kilometerstand</title>
-    <style>
-        :root {
-            --bg-body: #f5f5f5;
-            --bg-container: #ffffff;
-            --bg-input: #ffffff;
-            --bg-cell: #f9f9f9;
-            --text-primary: #333;
-            --text-secondary: #666;
-            --border-color: #e0e0e0;
-            --input-border: #ddd;
-            --shadow: 0 2px 10px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141416" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Leasing-km">
+  <meta name="description" content="Verfolge deinen Leasing-Kilometerstand und bleibe im Plan">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230e7490'/%3E%3Cpath d='M256 96a176 176 0 0 0-176 176h56a120 120 0 0 1 240 0h56A176 176 0 0 0 256 96z' fill='white' opacity='.35'/%3E%3Cpath d='M256 272l96-104' stroke='white' stroke-width='40' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='272' r='36' fill='white'/%3E%3Crect x='112' y='352' width='288' height='48' rx='24' fill='white'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230e7490'/%3E%3Cpath d='M256 96a176 176 0 0 0-176 176h56a120 120 0 0 1 240 0h56A176 176 0 0 0 256 96z' fill='white' opacity='.35'/%3E%3Cpath d='M256 272l96-104' stroke='white' stroke-width='40' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='272' r='36' fill='white'/%3E%3Crect x='112' y='352' width='288' height='48' rx='24' fill='white'/%3E%3C/svg%3E">
+  <title>Leasing-Kilometer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f6f4;
+      --surface: #ffffff;
+      --surface-2: #f1f1ee;
+      --ink: #18181b;
+      --text: #3f3f46;
+      --muted: #71717a;
+      --line: #e4e4e1;
+      --field: #d4d4d0;
+      --accent: #0e7490;
+      --focus: rgba(14, 116, 144, 0.22);
 
-        [data-theme="dark"] {
-            --bg-body: #1a1a1a;
-            --bg-container: #2d2d2d;
-            --bg-input: #3a3a3a;
-            --bg-cell: #353535;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --border-color: #404040;
-            --input-border: #555;
-            --shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
+      /* Status: Füllung, Spur (hellere Stufe derselben Farbe), Chip */
+      --good: #15803d;
+      --good-track: #dcfce7;
+      --good-chip: #e8f8ee;
+      --warn: #b45309;
+      --warn-track: #fdecc8;
+      --warn-chip: #fdf3e1;
+      --bad: #b91c1c;
+      --bad-track: #fde0e0;
+      --bad-chip: #fdeceb;
+      --marker: #18181b;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #141416;
+      --surface: #1d1d20;
+      --surface-2: #26262a;
+      --ink: #f4f4f5;
+      --text: #d4d4d8;
+      --muted: #a1a1aa;
+      --line: #2e2e33;
+      --field: #3f3f46;
+      --accent: #22a3c4;
+      --focus: rgba(34, 163, 196, 0.3);
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--bg-body);
-            min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: 1rem;
-            transition: var(--transition);
-        }
+      --good: #4ade80;
+      --good-track: #173823;
+      --good-chip: #14281b;
+      --warn: #fbbf24;
+      --warn-track: #3d2f12;
+      --warn-chip: #2d2412;
+      --bad: #f87171;
+      --bad-track: #452020;
+      --bad-chip: #331a1a;
+      --marker: #f4f4f5;
+    }
 
-        .container {
-            background: var(--bg-container);
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 500px;
-            overflow: hidden;
-            transition: var(--transition);
-            position: relative;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Install Banner */
-        .install-banner {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            color: white;
-            padding: 1rem 1.25rem;
-            display: none;
-            align-items: center;
-            gap: 0.9375rem;
-            border-bottom: 2px solid var(--border-color);
-        }
+    html, body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .install-banner.show {
-            display: flex;
-        }
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+    }
 
-        .install-banner-icon {
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
+    svg.i { width: 18px; height: 18px; flex: 0 0 auto; }
 
-        .install-banner-text {
-            flex: 1;
-            min-width: 0;
-        }
+    /* ── Kopf ── */
 
-        .install-banner-title {
-            font-weight: bold;
-            font-size: 0.9375rem;
-            margin-bottom: 0.1875rem;
-        }
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0 16px;
+    }
 
-        .install-banner-subtitle {
-            font-size: 0.8125rem;
-            opacity: 0.9;
-        }
+    .top h1 { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; margin-right: auto; }
 
-        .install-banner-button {
-            background: white;
-            color: #4CAF50;
-            border: none;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.375rem;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
+    .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: white;
+    }
 
-        .install-banner-button:hover {
-            background: #f1f1f1;
-            transform: scale(1.03);
-        }
+    .icon-btn {
+      appearance: none;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
 
-        .install-banner-button:active {
-            transform: scale(0.97);
-        }
+    .icon-btn:hover { background: var(--surface-2); }
+    .icon-btn .moon { display: none; }
+    [data-theme="dark"] .icon-btn .sun { display: none; }
+    [data-theme="dark"] .icon-btn .moon { display: block; }
 
-        .install-banner-close {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border: none;
-            font-size: 1.25rem;
-            cursor: pointer;
-            padding: 0;
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.375rem;
-            transition: background 0.2s ease;
-            flex-shrink: 0;
-            line-height: 1;
-        }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-        .install-banner-close:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
+    /* ── Flächen ── */
 
-        .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--bg-cell);
-            border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            width: 3rem;
-            height: 1.75rem;
-            cursor: pointer;
-            padding: 0.125rem;
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
-            z-index: 10;
-            -webkit-tap-highlight-color: transparent;
-        }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
 
-        .theme-toggle:hover {
-            transform: scale(1.05);
-        }
+    .card + .card, .card + .grid, .grid + .card, .grid + details { margin-top: 12px; }
 
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--muted);
+    }
 
-        .theme-toggle-slider {
-            background: #4CAF50;
-            width: 1.375rem;
-            height: 1.375rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-        }
+    /* Kilometerstand */
+    .odo label { display: block; margin-bottom: 8px; }
 
-        [data-theme="dark"] .theme-toggle-slider {
-            transform: translateX(1.375rem);
-            background: #2196F3;
-        }
+    .odo-field {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      border-bottom: 2px solid var(--field);
+      transition: border-color 0.15s;
+    }
 
-        .theme-toggle-slider span {
-            font-size: 0.75rem;
-        }
+    .odo-field:focus-within { border-color: var(--accent); }
 
-        .input-section {
-            padding: 3.75rem 1.25rem 1.25rem;
-            border-bottom: 2px solid var(--border-color);
-            transition: var(--transition);
-        }
+    .odo input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 34px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      padding: 2px 0 6px;
+      outline: none;
+      -moz-appearance: textfield;
+    }
 
-        .input-group {
-            margin-bottom: 1rem;
-        }
+    .odo-field span { font-size: 17px; font-weight: 550; color: var(--muted); }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: var(--transition);
-        }
+    input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .input-group input {
-            width: 100%;
-            padding: 0.625rem;
-            border: 1px solid var(--input-border);
-            border-radius: 0.25rem;
-            font-size: 1rem;
-            background: var(--bg-input);
-            color: var(--text-primary);
-            transition: var(--transition);
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
+    /* Hauptzahl */
+    .hero-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-        .input-group input::-webkit-inner-spin-button,
-        .input-group input::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 26px;
+      padding: 0 10px 0 8px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--surface-2);
+      white-space: nowrap;
+    }
 
-        .input-group input:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-        }
+    .chip svg { width: 15px; height: 15px; }
+    .chip[data-tone="good"] { background: var(--good-chip); }
+    .chip[data-tone="good"] svg { color: var(--good); }
+    .chip[data-tone="warn"] { background: var(--warn-chip); }
+    .chip[data-tone="warn"] svg { color: var(--warn); }
+    .chip[data-tone="bad"] { background: var(--bad-chip); }
+    .chip[data-tone="bad"] svg { color: var(--bad); }
+    .chip .ico { display: none; }
+    .chip[data-tone="good"] .ico-good, .chip[data-tone="warn"] .ico-warn, .chip[data-tone="bad"] .ico-bad { display: block; }
 
-        .visually-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            margin: -1px;
-            padding: 0;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
+    .hero-figure {
+      margin-top: 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .hero-figure strong {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
 
-        tr {
-            border-bottom: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
+    .hero-figure span { font-size: 18px; font-weight: 550; color: var(--text); }
 
-        td {
-            padding: 0.9375rem 1.25rem;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
+    .hero-sub { margin-top: 8px; font-size: 14px; color: var(--muted); }
+    .hero-sub b { color: var(--text); font-weight: 600; }
 
-        td:first-child {
-            color: var(--text-secondary);
-            width: 60%;
-        }
+    /* Messbalken: gefahrene km gegen das Limit, Strich = Soll heute */
+    .meter { margin-top: 22px; padding-top: 18px; }
 
-        td:last-child {
-            text-align: right;
-            font-weight: 600;
-            background: var(--bg-cell);
-            color: var(--text-primary);
-        }
+    .meter-track {
+      position: relative;
+      height: 12px;
+      border-radius: 6px;
+      background: var(--good-track);
+    }
 
-        .section-header td {
-            background: var(--border-color);
-            font-weight: 700;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 0.625rem 1.25rem;
-        }
+    .meter-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-radius: 6px;
+      background: var(--good);
+      transition: width 0.3s ease;
+    }
 
-        .highlight-row td {
-            font-size: 1.125rem;
-            padding: 1.25rem;
-        }
+    .meter[data-tone="warn"] .meter-track { background: var(--warn-track); }
+    .meter[data-tone="warn"] .meter-fill { background: var(--warn); }
+    .meter[data-tone="bad"] .meter-track { background: var(--bad-track); }
+    .meter[data-tone="bad"] .meter-fill { background: var(--bad); }
 
-        .highlight-row td:first-child {
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+    .meter-mark {
+      position: absolute;
+      top: -5px;
+      bottom: -5px;
+      width: 2px;
+      margin-left: -1px;
+      border-radius: 1px;
+      background: var(--marker);
+      box-shadow: 0 0 0 2px var(--surface);
+    }
 
-        .delta-positive { background: #4CAF50 !important; color: white !important; font-size: 1.5rem !important; }
-        .delta-negative { background: #f44336 !important; color: white !important; font-size: 1.5rem !important; }
-        .prognose-good { background: #4CAF50 !important; color: white !important; }
-        .prognose-warning { background: #FF9800 !important; color: white !important; }
-        .prognose-bad { background: #f44336 !important; color: white !important; }
+    .meter-mark span {
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
 
-        .warning-section {
-            margin: 1rem;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            border-left: 4px solid;
-            display: none;
-            transition: var(--transition);
-        }
+    .meter-mark.edge-left span { left: 0; transform: none; }
+    .meter-mark.edge-right span { left: auto; right: 0; transform: none; }
 
-        .warning-section.show {
-            display: block;
-        }
+    .meter-legend {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-        .warning-critical { background: #ffebee; border-color: #f44336; }
-        [data-theme="dark"] .warning-critical { background: #4a1a1a; border-color: #ff5252; }
-        .warning-moderate { background: #fff3e0; border-color: #ff9800; }
-        [data-theme="dark"] .warning-moderate { background: #4a3a1a; border-color: #ffb74d; }
-        .warning-info { background: #e3f2fd; border-color: #2196f3; }
-        [data-theme="dark"] .warning-info { background: #1a2a4a; border-color: #64b5f6; }
+    .meter-legend b { color: var(--text); font-weight: 600; }
 
-        .warning-title {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    /* Hinweis */
+    .advice {
+      display: none;
+      gap: 12px;
+      align-items: flex-start;
+    }
 
-        .warning-critical .warning-title { color: #c62828; }
-        [data-theme="dark"] .warning-critical .warning-title { color: #ff5252; }
-        .warning-moderate .warning-title { color: #e65100; }
-        [data-theme="dark"] .warning-moderate .warning-title { color: #ffb74d; }
-        .warning-info .warning-title { color: #1565c0; }
-        [data-theme="dark"] .warning-info .warning-title { color: #64b5f6; }
+    .advice.show { display: flex; }
 
-        .warning-message, .warning-recommendation {
-            color: var(--text-primary);
-            line-height: 1.5;
-        }
+    .advice-icon {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: var(--surface-2);
+    }
 
-        .warning-recommendation {
-            font-weight: 600;
-            margin-top: 0.625rem;
-            padding-top: 0.625rem;
-            border-top: 1px solid;
-        }
+    .advice[data-tone="good"] .advice-icon { background: var(--good-chip); color: var(--good); }
+    .advice[data-tone="warn"] .advice-icon { background: var(--warn-chip); color: var(--warn); }
+    .advice[data-tone="bad"] .advice-icon { background: var(--bad-chip); color: var(--bad); }
+    .advice .ico { display: none; }
+    .advice[data-tone="good"] .ico-good, .advice[data-tone="warn"] .ico-warn, .advice[data-tone="bad"] .ico-bad { display: block; }
 
-        .warning-critical .warning-recommendation { border-color: rgba(198, 40, 40, 0.3); }
-        .warning-moderate .warning-recommendation { border-color: rgba(230, 81, 0, 0.3); }
-        .warning-info .warning-recommendation { border-color: rgba(21, 101, 192, 0.3); }
+    .advice-title { font-weight: 650; font-size: 15px; }
+    .advice-text { margin-top: 2px; font-size: 14px; color: var(--text); line-height: 1.45; }
+    .advice-tip { margin-top: 8px; font-size: 14px; color: var(--ink); }
+    .advice strong { font-weight: 650; }
 
-        @media (max-width: 600px) {
-            body { padding: 0.625rem; }
-            .container { margin-top: 0.625rem; max-width: 100%; }
-            .install-banner { padding: 0.875rem 0.9375rem; gap: 0.75rem; }
-            .install-banner-icon { font-size: 1.75rem; }
-            .install-banner-title { font-size: 0.875rem; }
-            .install-banner-subtitle { font-size: 0.75rem; }
-            .install-banner-button { padding: 0.5rem 1rem; font-size: 0.8125rem; }
-            .install-banner-close { width: 1.75rem; height: 1.75rem; font-size: 1.125rem; }
-            .theme-toggle { top: 0.9375rem; right: 0.9375rem; width: 3.4375rem; height: 2rem; }
-            .theme-toggle-slider { width: 1.625rem; height: 1.625rem; font-size: 0.875rem; }
-            [data-theme="dark"] .theme-toggle-slider { transform: translateX(1.4375rem); }
-            .input-section { padding: 3.4375rem 0.9375rem 0.9375rem; }
-            td { padding: 1rem 0.9375rem; font-size: 0.9375rem; }
-            .section-header td { font-size: 0.8125rem; padding: 0.75rem 0.9375rem; }
-            .highlight-row td { font-size: 1.1875rem; padding: 1.125rem 0.9375rem; }
-            .delta-positive, .delta-negative { font-size: 1.625rem !important; }
-            .warning-section { margin: 0.75rem 0.9375rem; padding: 0.75rem; }
-            .warning-title { font-size: 0.9375rem; }
-            .warning-message, .warning-recommendation { font-size: 0.875rem; }
-        }
+    /* Kennzahlen */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
 
-        @media (max-width: 400px) {
-            .container { border-radius: 0; }
-            body { padding: 0; }
-            .install-banner { padding: 0.75rem; gap: 0.625rem; }
-            .install-banner-icon { font-size: 1.5rem; }
-            .install-banner-title { font-size: 0.8125rem; margin-bottom: 0.125rem; }
-            .install-banner-subtitle { font-size: 0.6875rem; }
-            .install-banner-button { padding: 0.4375rem 0.875rem; font-size: 0.75rem; }
-            td { padding: 0.875rem 0.75rem; font-size: 0.875rem; }
-            .highlight-row td { font-size: 1.0625rem; padding: 1rem 0.75rem; }
-            .delta-positive, .delta-negative { font-size: 1.5rem !important; }
-            .warning-section { margin: 0.625rem 0.75rem; padding: 0.625rem; }
-            .warning-title { font-size: 0.875rem; }
-            .warning-message, .warning-recommendation { font-size: 0.8125rem; }
-        }
-    </style>
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      min-width: 0;
+    }
+
+    .stat .eyebrow { font-size: 12.5px; }
+
+    .stat-value {
+      margin-top: 4px;
+      font-size: 22px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stat-value small { font-size: 14px; font-weight: 550; color: var(--muted); letter-spacing: 0; }
+    .stat-note { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+
+    .stat.wide { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .stat.wide .stat-value { font-size: 26px; }
+
+    /* Vertrag */
+    details.contract {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    details.contract summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 18px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    details.contract summary::-webkit-details-marker { display: none; }
+    details.contract summary .sum { margin-left: auto; font-size: 13px; font-weight: 500; color: var(--muted); text-align: right; }
+    details.contract summary svg { color: var(--muted); transition: transform 0.2s; }
+    details.contract[open] summary svg { transform: rotate(180deg); margin-left: auto; }
+    details.contract[open] summary .sum { display: none; }
+
+    .fields { padding: 0 18px 18px; display: grid; gap: 14px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .fields label { display: block; font-size: 13px; font-weight: 550; color: var(--text); margin-bottom: 6px; }
+
+    .fields input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--field);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--ink);
+      font: inherit;
+      font-size: 16px;
+      -moz-appearance: textfield;
+    }
+
+    .fields input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus); }
+
+    .foot {
+      margin-top: 20px;
+      font-size: 12.5px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Installieren */
+    .install {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      max-width: 496px;
+      margin: 0 auto;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 12px 12px 16px;
+      border-radius: 14px;
+      background: var(--ink);
+      color: var(--bg);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .install.show { display: flex; }
+    .install p { flex: 1; font-size: 14px; line-height: 1.35; }
+    .install p span { display: block; font-size: 12.5px; opacity: 0.7; }
+
+    .install button {
+      appearance: none;
+      border: 0;
+      border-radius: 9px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .install .go { height: 36px; padding: 0 14px; background: var(--accent); color: white; }
+    .install .x { width: 32px; height: 32px; background: transparent; color: inherit; opacity: 0.7; display: grid; place-items: center; }
+
+    @media (max-width: 360px) {
+      .hero-figure strong { font-size: 48px; }
+      .grid { gap: 8px; }
+      .stat { padding: 12px; }
+      .stat-value { font-size: 19px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container" role="main">
-        <div class="install-banner" id="installBanner">
-            <div class="install-banner-icon">📱</div>
-            <div class="install-banner-text">
-                <div class="install-banner-title">Als App installieren</div>
-                <div class="install-banner-subtitle">Schneller Zugriff vom Homescreen</div>
-            </div>
-            <button class="install-banner-button" id="installButton">Installieren</button>
-            <button class="install-banner-close" id="closeBanner">×</button>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.01"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  </svg>
+
+  <div class="app">
+    <header class="top">
+      <div class="logo" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/></svg>
+      </div>
+      <h1>Leasing-Kilometer</h1>
+      <button type="button" class="icon-btn" id="themeToggle" aria-label="Hell oder dunkel umschalten">
+        <svg class="i sun"><use href="#i-sun"/></svg>
+        <svg class="i moon"><use href="#i-moon"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="card odo">
+        <label class="eyebrow" for="aktuellerKm">Kilometerstand heute</label>
+        <div class="odo-field">
+          <input type="number" id="aktuellerKm" inputmode="numeric" value="4073" min="0" step="1" required>
+          <span>km</span>
         </div>
+      </section>
 
-        <div class="theme-toggle" id="themeToggle" aria-label="Theme umschalten">
-            <div class="theme-toggle-slider" role="switch" aria-checked="false">
-                <span id="themeIcon">☀️</span>
-            </div>
+      <section class="card" aria-labelledby="hero-label">
+        <div class="hero-head">
+          <h2 class="eyebrow" id="hero-label">Abweichung vom Plan</h2>
+          <span class="chip" id="deltaChip" data-tone="good">
+            <svg class="ico ico-good"><use href="#i-check"/></svg>
+            <svg class="ico ico-bad"><use href="#i-stop"/></svg>
+            <span id="deltaChipText">Im Plan</span>
+          </span>
         </div>
-
-        <div class="input-section" aria-labelledby="input-section-heading">
-            <h2 id="input-section-heading" class="visually-hidden">Eingabedaten</h2>
-            <div class="input-group">
-                <label for="kmJahr">km / Jahr</label>
-                <input type="number" id="kmJahr" value="15000" min="0" step="1" required>
-            </div>
-            <div class="input-group">
-                <label for="laufzeit">Laufzeit (Jahre)</label>
-                <input type="number" id="laufzeit" value="3" min="1" max="10" step="0.5" required>
-            </div>
-            <div class="input-group">
-                <label for="startDate">Start</label>
-                <input type="date" id="startDate" value="2025-06-20" required>
-            </div>
-            <div class="input-group">
-                <label for="aktuellerKm">Aktueller km Stand</label>
-                <input type="number" id="aktuellerKm" value="4073" min="0" step="1" required>
-            </div>
+        <div class="hero-figure">
+          <strong id="delta">489</strong>
+          <span id="deltaUnit">km unter Plan</span>
         </div>
+        <p class="hero-sub">Soll heute <b id="soll">4.562</b> km · gefahren <b id="istKm">4.073</b> km</p>
 
-        <div class="warning-section" id="warningBox" role="alert">
-            <div class="warning-title" id="warningTitle">
-                <span id="warningIcon" aria-hidden="true"></span>
-                <span id="warningTitleText"></span>
+        <div class="meter" id="meter" data-tone="good" role="img" aria-label="">
+          <div class="meter-track">
+            <div class="meter-fill" id="meterFill" style="width: 9%"></div>
+            <div class="meter-mark" id="meterMark" style="left: 10%"><span>Soll heute</span></div>
+          </div>
+          <div class="meter-legend">
+            <span><b id="usedPct">9 %</b> des Limits gefahren</span>
+            <span>Limit <b id="gesamtKm">45.000</b> km</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card advice" id="warningBox" role="status">
+        <div class="advice-icon" aria-hidden="true">
+          <svg class="i ico ico-good"><use href="#i-check"/></svg>
+          <svg class="i ico ico-warn"><use href="#i-warn"/></svg>
+          <svg class="i ico ico-bad"><use href="#i-stop"/></svg>
+        </div>
+        <div>
+          <p class="advice-title" id="warningTitleText"></p>
+          <p class="advice-text" id="warningMessage"></p>
+          <p class="advice-tip" id="warningRecommendation"></p>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Kennzahlen">
+        <div class="stat wide">
+          <div>
+            <p class="eyebrow">Prognose zum Vertragsende</p>
+            <p class="stat-value"><span id="prognose">40.381</span> <small>km</small></p>
+          </div>
+          <span class="chip" id="prognoseChip" data-tone="good">
+            <svg class="ico ico-good"><use href="#i-check"/></svg>
+            <svg class="ico ico-warn"><use href="#i-warn"/></svg>
+            <svg class="ico ico-bad"><use href="#i-stop"/></svg>
+            <span id="prognoseChipText">unter Limit</span>
+          </span>
+        </div>
+        <div class="stat">
+          <p class="eyebrow">Rest-km</p>
+          <p class="stat-value" id="restKm">40.927</p>
+          <p class="stat-note">bis zum Limit</p>
+        </div>
+        <div class="stat">
+          <p class="eyebrow">Verbleibend</p>
+          <p class="stat-value"><span id="verbleibendeTage">984</span> <small>Tage</small></p>
+          <p class="stat-note">bis <span id="vertragsende">20.06.2028</span></p>
+        </div>
+        <div class="stat">
+          <p class="eyebrow">Plan pro Tag</p>
+          <p class="stat-value"><span id="kmTag">41</span> <small>km</small></p>
+          <p class="stat-note">laut Vertrag</p>
+        </div>
+        <div class="stat">
+          <p class="eyebrow">Bisher pro Tag</p>
+          <p class="stat-value"><span id="aktuellerDurchschnitt">37</span> <small>km</small></p>
+          <p class="stat-note">seit <span id="tageSeit">111</span> Tagen</p>
+        </div>
+      </section>
+
+      <details class="contract" id="contract">
+        <summary>
+          Vertrag
+          <span class="sum" id="contractSum"></span>
+          <svg class="i"><use href="#i-chev"/></svg>
+        </summary>
+        <div class="fields">
+          <div>
+            <label for="kmJahr">Kilometer pro Jahr</label>
+            <input type="number" id="kmJahr" inputmode="numeric" value="15000" min="0" step="1" required>
+          </div>
+          <div class="row2">
+            <div>
+              <label for="laufzeit">Laufzeit in Jahren</label>
+              <input type="number" id="laufzeit" inputmode="decimal" value="3" min="1" max="10" step="0.5" required>
             </div>
-            <div class="warning-message" id="warningMessage"></div>
-            <div class="warning-recommendation" id="warningRecommendation"></div>
+            <div>
+              <label for="startDate">Beginn</label>
+              <input type="date" id="startDate" value="2025-06-20" required>
+            </div>
+          </div>
         </div>
+      </details>
 
-        <div class="table-section" aria-labelledby="table-section-heading">
-            <h2 id="table-section-heading" class="visually-hidden">Vertragsübersicht</h2>
-            <table>
-                <tr class="section-header"><td colspan="2">Aktueller Status</td></tr>
-                <tr><td>km / Tag</td><td id="kmTag">41</td></tr>
-                <tr><td>Tage seit Leasingstart</td><td id="tageSeit">111</td></tr>
-                <tr class="highlight-row"><td>SOLL</td><td id="soll">4.562</td></tr>
-                <tr class="highlight-row"><td>DELTA</td><td id="delta" class="delta-positive">489</td></tr>
+      <p class="foot">Die Angaben bleiben auf diesem Gerät.</p>
+    </main>
+  </div>
 
-                <tr class="section-header"><td colspan="2">Leasingende</td></tr>
-                <tr><td>Vertragsende</td><td id="vertragsende">20.06.2028</td></tr>
-                <tr><td>Verbleibende Tage</td><td id="verbleibendeTage">984</td></tr>
-                <tr><td>Gesamt-km Limit</td><td id="gesamtKm">45.000</td></tr>
-                <tr class="highlight-row"><td>Verfügbare Rest-km</td><td id="restKm">40.927</td></tr>
+  <div class="install" id="installBanner" role="dialog" aria-label="App installieren">
+    <p>Als App installieren<span>Schneller Zugriff vom Homescreen</span></p>
+    <button type="button" class="go" id="installButton">Installieren</button>
+    <button type="button" class="x" id="closeBanner" aria-label="Schließen"><svg class="i"><use href="#i-x"/></svg></button>
+  </div>
 
-                <tr class="section-header"><td colspan="2">Prognose</td></tr>
-                <tr><td>Dein aktueller Ø km/Tag</td><td id="aktuellerDurchschnitt">37</td></tr>
-                <tr class="highlight-row"><td>Prognose bei Vertragsende</td><td id="prognose" class="prognose-good">40.381</td></tr>
-            </table>
-        </div>
-    </div>
+  <script>
+    const STORAGE_KEY = 'leasingTrackerData';
+    const THEME_KEY = 'leasingTrackerTheme';
 
-    <script>
-        const STORAGE_KEY = 'leasingTrackerData';
-        const THEME_KEY = 'leasingTrackerTheme';
+    const $ = (id) => document.getElementById(id);
 
-        function formatNumber(num) {
-            return Number.isFinite(num) ? num.toLocaleString('de-DE') : '0';
-        }
+    function formatNumber(num) {
+      return Number.isFinite(num) ? num.toLocaleString('de-DE') : '0';
+    }
 
-        function formatDate(date) {
-            return date.toLocaleDateString('de-DE');
-        }
+    function formatDate(date) {
+      return date.toLocaleDateString('de-DE');
+    }
 
-        function saveToLocalStorage() {
-            const data = {
-                kmJahr: document.getElementById('kmJahr').value,
-                laufzeit: document.getElementById('laufzeit').value,
-                startDate: document.getElementById('startDate').value,
-                aktuellerKm: document.getElementById('aktuellerKm').value
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
+    function saveToLocalStorage() {
+      const data = {
+        kmJahr: $('kmJahr').value,
+        laufzeit: $('laufzeit').value,
+        startDate: $('startDate').value,
+        aktuellerKm: $('aktuellerKm').value
+      };
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) { /* privat oder voll */ }
+    }
 
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    document.getElementById('kmJahr').value = data.kmJahr || 15000;
-                    document.getElementById('laufzeit').value = data.laufzeit || 3;
-                    document.getElementById('startDate').value = data.startDate || '2025-06-20';
-                    document.getElementById('aktuellerKm').value = data.aktuellerKm || 4073;
-                } catch (e) {
-                    console.error('Fehler beim Laden:', e);
-                }
-            }
-        }
+    function loadFromLocalStorage() {
+      let saved = null;
+      try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) { saved = null; }
+      if (!saved) return false;
+      try {
+        const data = JSON.parse(saved);
+        $('kmJahr').value = data.kmJahr || 15000;
+        $('laufzeit').value = data.laufzeit || 3;
+        $('startDate').value = data.startDate || '2025-06-20';
+        $('aktuellerKm').value = data.aktuellerKm || 4073;
+        return true;
+      } catch (e) {
+        console.error('Fehler beim Laden:', e);
+        return false;
+      }
+    }
 
-        function getPreferredTheme() {
-            return localStorage.getItem(THEME_KEY) || 
-                   (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        }
+    function storedTheme() {
+      try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; }
+    }
 
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem(THEME_KEY, theme);
-            document.getElementById('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
-        }
+    function getPreferredTheme() {
+      return storedTheme() || (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    }
 
-        function calculate() {
-            const kmJahr = parseFloat(document.getElementById('kmJahr').value) || 0;
-            const laufzeit = parseFloat(document.getElementById('laufzeit').value) || 3;
-            const startDate = new Date(document.getElementById('startDate').value);
-            const aktuellerKm = parseFloat(document.getElementById('aktuellerKm').value) || 0;
-            const heute = new Date();
+    function setTheme(theme, remember) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (remember) {
+        try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* ignore */ }
+      }
+    }
 
-            if (isNaN(kmJahr) || isNaN(laufzeit) || isNaN(aktuellerKm) || isNaN(startDate.getTime())) return;
+    function tone(el, value) { el.dataset.tone = value; }
 
-            const vertragsende = new Date(startDate);
-            vertragsende.setFullYear(startDate.getFullYear() + Math.floor(laufzeit));
-            vertragsende.setMonth(startDate.getMonth() + Math.round((laufzeit % 1) * 12));
+    function calculate() {
+      const kmJahr = parseFloat($('kmJahr').value) || 0;
+      const laufzeit = parseFloat($('laufzeit').value) || 3;
+      const startDate = new Date($('startDate').value);
+      const aktuellerKm = parseFloat($('aktuellerKm').value) || 0;
+      const heute = new Date();
 
-            const diffTime = Math.max(0, heute - startDate);
-            const tageSeit = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            const diffTimeEnde = Math.max(0, vertragsende - heute);
-            const verbleibendeTage = Math.floor(diffTimeEnde / (1000 * 60 * 60 * 24));
+      if (isNaN(kmJahr) || isNaN(laufzeit) || isNaN(aktuellerKm) || isNaN(startDate.getTime())) return;
 
-            const kmTag = Math.round(kmJahr / 365);
-            const soll = Math.round(kmTag * tageSeit);
-            const delta = soll - aktuellerKm;
-            const gesamtKm = Math.round(kmJahr * laufzeit);
-            const restKm = Math.max(0, gesamtKm - aktuellerKm);
-            const aktuellerDurchschnitt = tageSeit > 0 ? Math.round(aktuellerKm / tageSeit) : 0;
-            const prognose = aktuellerKm + (aktuellerDurchschnitt * verbleibendeTage);
+      const vertragsende = new Date(startDate);
+      vertragsende.setFullYear(startDate.getFullYear() + Math.floor(laufzeit));
+      vertragsende.setMonth(startDate.getMonth() + Math.round((laufzeit % 1) * 12));
 
-            document.getElementById('kmTag').textContent = formatNumber(kmTag);
-            document.getElementById('tageSeit').textContent = formatNumber(tageSeit);
-            document.getElementById('soll').textContent = formatNumber(soll);
-            document.getElementById('delta').textContent = formatNumber(Math.abs(delta));
-            document.getElementById('delta').className = delta >= 0 ? 'delta-positive' : 'delta-negative';
+      const diffTime = Math.max(0, heute - startDate);
+      const tageSeit = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffTimeEnde = Math.max(0, vertragsende - heute);
+      const verbleibendeTage = Math.floor(diffTimeEnde / (1000 * 60 * 60 * 24));
 
-            document.getElementById('vertragsende').textContent = formatDate(vertragsende);
-            document.getElementById('verbleibendeTage').textContent = formatNumber(verbleibendeTage);
-            document.getElementById('gesamtKm').textContent = formatNumber(gesamtKm);
-            document.getElementById('restKm').textContent = formatNumber(restKm);
+      const kmTag = Math.round(kmJahr / 365);
+      const soll = Math.round(kmTag * tageSeit);
+      const delta = soll - aktuellerKm;
+      const gesamtKm = Math.round(kmJahr * laufzeit);
+      const restKm = Math.max(0, gesamtKm - aktuellerKm);
+      const aktuellerDurchschnitt = tageSeit > 0 ? Math.round(aktuellerKm / tageSeit) : 0;
+      const prognose = aktuellerKm + (aktuellerDurchschnitt * verbleibendeTage);
+      const prognoseTone = prognose <= gesamtKm - 1000 ? 'good' : prognose <= gesamtKm ? 'warn' : 'bad';
 
-            document.getElementById('aktuellerDurchschnitt').textContent = formatNumber(aktuellerDurchschnitt);
-            document.getElementById('prognose').textContent = formatNumber(prognose);
-            document.getElementById('prognose').className = 
-                prognose <= gesamtKm - 1000 ? 'prognose-good' :
-                prognose <= gesamtKm ? 'prognose-warning' : 'prognose-bad';
+      // Hauptzahl
+      $('delta').textContent = formatNumber(Math.abs(delta));
+      $('deltaUnit').textContent = delta >= 0 ? 'km unter Plan' : 'km über Plan';
+      tone($('deltaChip'), delta >= 0 ? 'good' : 'bad');
+      $('deltaChipText').textContent = delta >= 0 ? 'Im Plan' : 'Über Plan';
+      $('soll').textContent = formatNumber(soll);
+      $('istKm').textContent = formatNumber(aktuellerKm);
 
-            saveToLocalStorage();
-            checkAndShowWarnings(delta, prognose, gesamtKm, verbleibendeTage, aktuellerDurchschnitt);
-        }
+      // Messbalken
+      const usedShare = gesamtKm > 0 ? Math.min(1, aktuellerKm / gesamtKm) : 0;
+      const gesamtTage = tageSeit + verbleibendeTage;
+      const timeShare = gesamtTage > 0 ? Math.min(1, tageSeit / gesamtTage) : 0;
+      $('meterFill').style.width = (usedShare * 100).toFixed(2) + '%';
+      const mark = $('meterMark');
+      mark.style.left = (timeShare * 100).toFixed(2) + '%';
+      mark.classList.toggle('edge-left', timeShare < 0.12);
+      mark.classList.toggle('edge-right', timeShare > 0.88);
+      tone($('meter'), prognoseTone);
+      $('usedPct').textContent = Math.round(usedShare * 100) + ' %';
+      $('gesamtKm').textContent = formatNumber(gesamtKm);
+      $('meter').setAttribute('aria-label', `${formatNumber(aktuellerKm)} von ${formatNumber(gesamtKm)} km gefahren, ${Math.round(timeShare * 100)} % der Laufzeit vorbei`);
 
-        function checkAndShowWarnings(delta, prognose, gesamtKm, verbleibendeTage, aktuellerDurchschnitt) {
-            const warningBox = document.getElementById('warningBox');
-            const warningIcon = document.getElementById('warningIcon');
-            const warningTitleText = document.getElementById('warningTitleText');
-            const warningMessage = document.getElementById('warningMessage');
-            const warningRecommendation = document.getElementById('warningRecommendation');
+      // Kennzahlen
+      $('prognose').textContent = formatNumber(prognose);
+      tone($('prognoseChip'), prognoseTone);
+      $('prognoseChipText').textContent = prognoseTone === 'good' ? 'unter Limit' : prognoseTone === 'warn' ? 'knapp' : 'über Limit';
+      $('restKm').textContent = formatNumber(restKm);
+      $('verbleibendeTage').textContent = formatNumber(verbleibendeTage);
+      $('vertragsende').textContent = formatDate(vertragsende);
+      $('kmTag').textContent = formatNumber(kmTag);
+      $('aktuellerDurchschnitt').textContent = formatNumber(aktuellerDurchschnitt);
+      $('tageSeit').textContent = formatNumber(tageSeit);
 
-            warningBox.className = 'warning-section';
-            const ueberschreitung = prognose - gesamtKm;
+      $('contractSum').textContent = `${formatNumber(kmJahr)} km/Jahr · ${String(laufzeit).replace('.', ',')} J. · ab ${formatDate(startDate)}`;
 
-            if (ueberschreitung > 2000) {
-                const maxKmProTag = Math.floor((gesamtKm - parseFloat(document.getElementById('aktuellerKm').value)) / verbleibendeTage);
-                warningBox.classList.add('show', 'warning-critical');
-                warningIcon.textContent = '🚨';
-                warningTitleText.textContent = 'Kritische Warnung!';
-                warningMessage.innerHTML = `Bei deinem aktuellen Fahrverhalten wirst du das Limit um <strong>${formatNumber(ueberschreitung)} km</strong> überschreiten!`;
-                warningRecommendation.innerHTML = `💡 Reduziere auf max. <strong>${formatNumber(maxKmProTag)} km/Tag</strong>`;
-            } else if (ueberschreitung > 0) {
-                const maxKmProTag = Math.floor((gesamtKm - parseFloat(document.getElementById('aktuellerKm').value)) / verbleibendeTage);
-                warningBox.classList.add('show', 'warning-moderate');
-                warningIcon.textContent = '⚠️';
-                warningTitleText.textContent = 'Achtung!';
-                warningMessage.innerHTML = `Du bist auf Kurs, das Limit um <strong>${formatNumber(ueberschreitung)} km</strong> zu überschreiten.`;
-                warningRecommendation.innerHTML = `💡 Fahre max. <strong>${formatNumber(maxKmProTag)} km/Tag</strong>`;
-            } else if (delta < -500) {
-                const sollKmProTag = Math.round(parseFloat(document.getElementById('kmJahr').value) / 365);
-                warningBox.classList.add('show', 'warning-moderate');
-                warningIcon.textContent = '⚠️';
-                warningTitleText.textContent = 'Über dem Soll';
-                warningMessage.innerHTML = `Du hast <strong>${formatNumber(Math.abs(delta))} km</strong> mehr gefahren als geplant.`;
-                warningRecommendation.innerHTML = `💡 Reduziere auf <strong>${formatNumber(sollKmProTag)} km/Tag</strong>`;
-            } else if (delta > 3000) {
-                const kmTag = Math.round(parseFloat(document.getElementById('kmJahr').value) / 365);
-                const reserveProTag = Math.floor(delta / verbleibendeTage);
-                warningBox.classList.add('show', 'warning-info');
-                warningIcon.textContent = '✅';
-                warningTitleText.textContent = 'Super!';
-                warningMessage.innerHTML = `Du hast noch <strong>${formatNumber(delta)} km</strong> Reserve.`;
-                warningRecommendation.innerHTML = `💡 Du kannst bis zu <strong>${formatNumber(kmTag + reserveProTag)} km/Tag</strong> fahren.`;
-            }
-        }
+      saveToLocalStorage();
+      checkAndShowWarnings(delta, prognose, gesamtKm, verbleibendeTage);
+    }
 
-        // Initialisierung
-        setTheme(getPreferredTheme());
-        loadFromLocalStorage();
-        calculate();
+    function showAdvice(toneValue, title, message, tip) {
+      const box = $('warningBox');
+      box.classList.add('show');
+      tone(box, toneValue);
+      $('warningTitleText').textContent = title;
+      $('warningMessage').innerHTML = message;
+      $('warningRecommendation').innerHTML = tip;
+    }
 
-        // Event Listener
-        document.querySelectorAll('input').forEach(input => 
-            input.addEventListener('input', calculate));
-        
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        });
+    function checkAndShowWarnings(delta, prognose, gesamtKm, verbleibendeTage) {
+      $('warningBox').classList.remove('show');
+      const ueberschreitung = prognose - gesamtKm;
+      const aktuellerKm = parseFloat($('aktuellerKm').value);
+      const sollKmProTag = Math.round(parseFloat($('kmJahr').value) / 365);
 
-        // System Theme Listener
-        if (window.matchMedia) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.getItem(THEME_KEY)) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        }
+      if (ueberschreitung > 2000) {
+        const maxKmProTag = Math.floor((gesamtKm - aktuellerKm) / verbleibendeTage);
+        showAdvice('bad', 'Limit wird deutlich überschritten',
+          `Bei deinem bisherigen Schnitt fährst du bis Vertragsende <strong>${formatNumber(ueberschreitung)} km</strong> über das Limit.`,
+          `Ab jetzt höchstens <strong>${formatNumber(maxKmProTag)} km pro Tag</strong>.`);
+      } else if (ueberschreitung > 0) {
+        const maxKmProTag = Math.floor((gesamtKm - aktuellerKm) / verbleibendeTage);
+        showAdvice('warn', 'Knapp über dem Limit',
+          `Bei deinem bisherigen Schnitt landest du <strong>${formatNumber(ueberschreitung)} km</strong> über dem Limit.`,
+          `Ab jetzt höchstens <strong>${formatNumber(maxKmProTag)} km pro Tag</strong>.`);
+      } else if (delta < -500) {
+        showAdvice('warn', 'Über dem Soll',
+          `Du bist <strong>${formatNumber(Math.abs(delta))} km</strong> mehr gefahren als geplant.`,
+          `Zurück auf <strong>${formatNumber(sollKmProTag)} km pro Tag</strong>.`);
+      } else if (delta > 3000) {
+        const reserveProTag = Math.floor(delta / verbleibendeTage);
+        showAdvice('good', 'Viel Reserve',
+          `Du hast <strong>${formatNumber(delta)} km</strong> Luft gegenüber dem Plan.`,
+          `Du könntest bis zu <strong>${formatNumber(sollKmProTag + reserveProTag)} km pro Tag</strong> fahren.`);
+      }
+    }
 
-        // PWA Installation
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(reg => console.log('Service Worker registriert:', reg.scope))
-                .catch(err => console.error('Service Worker Fehler:', err));
-        }
+    // Initialisierung
+    setTheme(getPreferredTheme(), false);
+    const hadData = loadFromLocalStorage();
+    $('contract').open = !hadData;
+    calculate();
 
-        let deferredPrompt;
-        const installBanner = document.getElementById('installBanner');
-        const installButton = document.getElementById('installButton');
-        const closeBanner = document.getElementById('closeBanner');
+    document.querySelectorAll('input').forEach((input) => input.addEventListener('input', calculate));
 
-        const bannerDismissed = localStorage.getItem('installBannerDismissed');
+    $('themeToggle').addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true);
+    });
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (!bannerDismissed) {
-                installBanner.classList.add('show');
-            }
-        });
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!storedTheme()) setTheme(e.matches ? 'dark' : 'light', false);
+      });
+    }
 
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('PWA installiert');
-            }
-            deferredPrompt = null;
-            installBanner.classList.remove('show');
-        });
+    // PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .catch((err) => console.error('Service Worker Fehler:', err));
+    }
 
-        closeBanner.addEventListener('click', () => {
-            installBanner.classList.remove('show');
-            localStorage.setItem('installBannerDismissed', 'true');
-        });
+    let deferredPrompt;
+    const installBanner = $('installBanner');
+    const dismissBanner = () => {
+      installBanner.classList.remove('show');
+      try { localStorage.setItem('installBannerDismissed', 'true'); } catch (e) { /* ignore */ }
+    };
+    let bannerDismissed = null;
+    try { bannerDismissed = localStorage.getItem('installBannerDismissed'); } catch (e) { bannerDismissed = null; }
 
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA zum Homescreen hinzugefügt');
-            installBanner.classList.remove('show');
-            localStorage.setItem('installBannerDismissed', 'true');
-        });
-    </script>
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!bannerDismissed) installBanner.classList.add('show');
+    });
+
+    $('installButton').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBanner.classList.remove('show');
+    });
+
+    $('closeBanner').addEventListener('click', dismissBanner);
+    window.addEventListener('appinstalled', dismissBanner);
+  </script>
 </body>
 </html>
